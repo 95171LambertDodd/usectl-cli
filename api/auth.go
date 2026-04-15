@@ -35,7 +35,10 @@ type UpdateProfileRequest struct {
 func (c *Client) Login(req LoginRequest) (*AuthResponse, error) {
 	var resp AuthResponse
 	err := c.Post("/api/auth/login", req, &resp)
-	return &resp, err
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
 }
 
 func (c *Client) Register(req RegisterRequest) (*AuthResponse, error) {
