@@ -10,9 +10,11 @@ LDFLAGS = -s -w -X github.com/giorgi/usectl/cmd.Version=$(VERSION)
 build:
 	CGO_ENABLED=0 go build -ldflags "$(LDFLAGS)" -o $(BINARY_NAME) .
 
-## Install to /usr/local/bin
+## Install to ~/bin (no sudo needed)
 install: build
-	sudo cp $(BINARY_NAME) /usr/local/bin/$(BINARY_NAME)
+	@mkdir -p $(HOME)/bin
+	cp $(BINARY_NAME) $(HOME)/bin/$(BINARY_NAME)
+	@echo "✓ Installed to $(HOME)/bin/$(BINARY_NAME)"
 
 ## Build release binaries for all platforms
 release: clean
