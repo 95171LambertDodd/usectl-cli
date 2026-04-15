@@ -106,9 +106,15 @@ type DeploymentLogsResponse struct {
 }
 
 func (c *Client) ListProjects() ([]ProjectWithDeployment, error) {
-	var projects []ProjectWithDeployment
-	err := c.Get("/api/projects", &projects)
-	return projects, err
+	var resp struct {
+		Projects   []ProjectWithDeployment `json:"projects"`
+		Total      int                     `json:"total"`
+		Page       int                     `json:"page"`
+		PerPage    int                     `json:"per_page"`
+		TotalPages int                     `json:"total_pages"`
+	}
+	err := c.Get("/api/projects?per_page=100", &resp)
+	return resp.Projects, err
 }
 
 func (c *Client) GetProject(id string) (*Project, error) {
