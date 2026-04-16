@@ -54,11 +54,18 @@ func (c *Client) Register(req RegisterRequest) (*AuthResponse, error) {
 func (c *Client) GetProfile() (*User, error) {
 	var user User
 	err := c.Get("/api/auth/profile", &user)
-	return &user, err
+	// NOTE: return nil on error to stay consistent with other methods
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
 }
 
 func (c *Client) UpdateProfile(req UpdateProfileRequest) (*User, error) {
 	var user User
 	err := c.Put("/api/auth/profile", req, &user)
-	return &user, err
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
 }
