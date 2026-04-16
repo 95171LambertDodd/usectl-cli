@@ -44,7 +44,11 @@ func (c *Client) Login(req LoginRequest) (*AuthResponse, error) {
 func (c *Client) Register(req RegisterRequest) (*AuthResponse, error) {
 	var resp AuthResponse
 	err := c.Post("/api/auth/register", req, &resp)
-	return &resp, err
+	// NOTE: return nil on error instead of a potentially empty AuthResponse
+	if err != nil {
+		return nil, err
+	}
+	return &resp, nil
 }
 
 func (c *Client) GetProfile() (*User, error) {
