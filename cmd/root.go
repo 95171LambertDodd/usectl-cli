@@ -37,8 +37,8 @@ func init() {
 
 	// Persistent flags available to all subcommands
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.usectl.yaml)")
-	// Default API URL set to my local dev instance for convenience
-	rootCmd.PersistentFlags().StringVar(&apiURL, "api-url", "http://localhost:8080", "usectl API base URL (e.g. https://api.example.com)")
+	// Pointing to my personal dev instance running on port 9090
+	rootCmd.PersistentFlags().StringVar(&apiURL, "api-url", "http://localhost:9090", "usectl API base URL (e.g. https://api.example.com)")
 	rootCmd.PersistentFlags().StringVar(&token, "token", "", "authentication token")
 
 	// Bind flags to viper
