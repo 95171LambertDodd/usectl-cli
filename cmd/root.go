@@ -5,46 +5,26 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var (
-	apiURL     string
-	jsonOutput bool
+	cfgFile string
+	apiURL  string
+	token   string
 )
 
-// Version is set at build time by GoReleaser via ldflags.
-var Version = "dev"
-
+// rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:     "usectl",
-	Short:   "usectl — CLI for the usectl.com self-hosted deployment platform",
-	Version: Version,
-	Long: `usectl is the CLI for the usectl.com platform — a self-hosted Vercel alternative
-running on K3s. It provides full lifecycle management for your applications.
-
-Command Groups:
-  login/register  Authenticate with the platform
-  profile         View and update your user profile
-  projects        Create, deploy, update, delete, and monitor projects
-  envs            Manage custom environment variables for a project
-  cron            Manage scheduled cron jobs for a project
-  domains         Manage custom domains
-  billing         Manage your subscription and payment
-  github          GitHub App integration (OAuth, repos, branches)
-
-All commands support --json for machine-readable output, making the CLI
-suitable for scripting and AI agent automation.
-
-Quick Start:
-  1. usectl login                                    # Authenticate
-  2. usectl github login                             # Connect GitHub
-  3. usectl projects create --name my-app \           # Create project
-     --repo https://github.com/user/repo \  
-     --domain my-app --port 3000
-  4. usectl projects deploy <id>                     # Deploy latest commit
-  5. usectl projects logs <id>                       # View logs`,
+	Use:   "usectl",
+	Short: "A CLI tool for managing users via the usectl API",
+	Long: `usectl-cli is a command-line interface for interacting with the usectl
+user management API. It allows administrators to create, update, delete,
+and list users, as well as manage authentication tokens.`,
 }
 
+// Execute adds all child commands to the root command and sets flags appropriately.
+// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -53,6 +33,63 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringVar(&apiURL, "api-url", "", "API base URL (default: from config or https://manager.usectl.com)")
-	rootCmd.PersistentFlags().BoolVar(&jsonOutput, "json", false, "Output in JSON format")
+	cobra.OnInitialize(initConfig)
+
+	// Persistent flags available to all subcommands
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.usectl.yaml)")
+	rootCmd.PersistentFlags().StringVar(&apiURL, "api-url", "", "usectl API base URL (e.g. https://api.example.com)")
+	rootCmd.PersistentFlags().StringVar(&token, "token", "", "authentication token")
+
+	// Bind flags to viper
+	_ = viper.BindPFlag("api_url", rootCmd.PersistentFlags().Lookup("api-url"))
+	_ = viper.BindPFlag("token", rootCmd.PersistentFlags().Lookup("token"))
+}
+
+// initConfig reads in config file and ENV variables if set.
+func initConfig() {
+	if cfgFile != "" {
+		// Use config file from the flag
+		viper.SetConfigFile(cfgFile)
+	} else {
+		// Find home directory
+		home, err := os.UserHomeDir()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "error finding home directory:", err)
+			os.Exit(1)
+		}
+
+		// Search for config in home directory with name ".usectl"
+		viper.AddConfigPath(home)
+		viper.SetConfigType("yaml")
+		viper.SetConfigName(".usectl")
+	}
+
+	// Read in environment variables prefixed with USECTL_
+	viper.SetEnvPrefix("USECTL")
+	viper.AutomaticEnv()
+
+	// If a config file is found, read it in
+	if err := viper.ReadInConfig(); err == nil {
+		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+	}
+}
+
+// getAPIURL returns the configured API URL or exits with an error
+func getAPIURL() string {
+	url := viper.GetString("api_url")
+	if url == "" {
+		fmt.Fprintln(os.Stderr, "error: API URL is required. Set --api-url flag or USECTL_API_URL environment variable.")
+		os.Exit(1)
+	}
+	return url
+}
+
+// getToken returns the configured auth token or exits with an error
+func getToken() string {
+	t := viper.GetString("token")
+	if t == "" {
+		fmt.Fprintln(os.Stderr, "error: authentication token is required. Set --token flag or USECTL_TOKEN environment variable.")
+		os.Exit(1)
+	}
+	return t
 }
