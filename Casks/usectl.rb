@@ -37,4 +37,8 @@ cask "usectl" do
 
   # Personal note: after install, run `usectl auth login` to authenticate
   # and `usectl config init` to set up your workspace.
+  # Useful commands:
+  #   usectl deploy list        - list recent deployments
+  #   usectl services status    - check running services
+  #   usectl logs <service>     - tail logs for a service
 end
