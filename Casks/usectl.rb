@@ -34,4 +34,7 @@ cask "usectl" do
   end
 
   # No zap stanza required
+
+  # Personal note: after install, run `usectl auth login` to authenticate
+  # and `usectl config init` to set up your workspace.
 end
