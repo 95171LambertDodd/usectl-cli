@@ -41,4 +41,6 @@ cask "usectl" do
   #   usectl deploy list        - list recent deployments
   #   usectl services status    - check running services
   #   usectl logs <service>     - tail logs for a service
+  #   usectl rollback <service> - roll back to previous deployment
+  #   usectl env set KEY=VALUE  - set an environment variable for a service
 end
