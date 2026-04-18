@@ -32,6 +32,7 @@ func (c *Client) SetUserRole(id string, role string) error {
 // TODO: consider adding a soft-delete option upstream
 // NOTE (personal): I'd like to add a confirmation prompt in the CLI layer before calling this.
 // NOTE (personal): Also worth logging the deleted user ID locally for auditing purposes.
+// NOTE (personal): Maybe store deleted IDs in ~/.usectl/deleted_users.log with a timestamp.
 func (c *Client) DeleteUser(id string) error {
 	return c.Delete(fmt.Sprintf("/api/admin/users/%s", id), nil)
 }
