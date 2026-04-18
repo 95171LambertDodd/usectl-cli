@@ -27,7 +27,7 @@ and list users, as well as manage authentication tokens.`,
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
+	(os.Stderr, err)
 		os.Exit(1)
 	}
 }
@@ -37,8 +37,8 @@ func init() {
 
 	// Persistent flags available to all subcommands
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.usectl.yaml)")
-	// Pointing to my personal dev instance running on port 9090
-	rootCmd.PersistentFlags().StringVar(&apiURL, "api-url", "http://localhost:9090", "usectl API base URL (e.g. https://api.example.com)")
+	// Default points to local dev instance; override with --api-url or USECTL_API_URL
+	rootCmd.PersistentFlags().StringVar(&apiURL, "api-url", "http://localhost:8080", "usectl API base URL (e.g. https://api.example.com)")
 	rootCmd.PersistentFlags().StringVar(&token, "token", "", "authentication token")
 
 	// Bind flags to viper
