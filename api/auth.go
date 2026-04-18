@@ -69,3 +69,9 @@ func (c *Client) UpdateProfile(req UpdateProfileRequest) (*User, error) {
 	}
 	return &user, nil
 }
+
+// DeleteAccount removes the authenticated user's account permanently.
+// NOTE: added this for my own use — upstream doesn't expose this endpoint yet.
+func (c *Client) DeleteAccount() error {
+	return c.Delete("/api/auth/profile")
+}
