@@ -103,7 +103,7 @@ usectl projects logs <id>
 --domain        Subdomain (required)
 --branch        Git branch (default: main)
 --type          Project type: static or service (default: service)
---port          Container port (default: 3000)
+--port          Container port (default: 8080)  # changed from 3000; I prefer 8080 as my default
 --db            Provision a PostgreSQL database
 --s3            Provision S3 storage (MinIO)
 --addon         Add addon: database, s3, redis, nats (repeatable)
